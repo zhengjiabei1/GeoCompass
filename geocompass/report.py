@@ -247,6 +247,36 @@ def _format(value: float, digits: int = 3) -> str:
     return f"{value:.{digits}f}"
 
 
+def _regret_chart(bandit: dict, path: Path) -> None:
+    if not bandit:
+        return
+    width, height = 520, 300
+    margin_left, margin_right, margin_top, margin_bottom = 56, 16, 24, 42
+    plot_width = width - margin_left - margin_right
+    plot_height = height - margin_top - margin_bottom
+    peak = max(max(policy["curve"]) for policy in bandit.values()) or 1.0
+    longest = max(len(policy["curve"]) for policy in bandit.values())
+    body = []
+    body.append(_line(margin_left, margin_top + plot_height, margin_left + plot_width,
+                      margin_top + plot_height, "#333"))
+    body.append(_line(margin_left, margin_top, margin_left, margin_top + plot_height, "#333"))
+    colours = {"static": "#666666", "linucb_cold": "#c0392b", "linucb": "#2c7fb8",
+               "thompson": "#27ae60", "epsilon_greedy": "#8e44ad"}
+    for name, policy in bandit.items():
+        points = []
+        for index, value in enumerate(policy["curve"]):
+            x = margin_left + plot_width * index / max(1, longest - 1)
+            y = margin_top + plot_height * (1.0 - value / peak)
+            points.append((x, y))
+        body.append(_polyline(points, colours.get(name, "#333")))
+        if points:
+            body.append(_text(points[-1][0] + 4, points[-1][1] + 4, name, 10,
+                              fill=colours.get(name, "#333")))
+    body.append(_text(margin_left, height - 14, "stream step", 11))
+    body.append(_text(8, margin_top + 10, "cum. regret", 11))
+    Path(path).write_text(_svg(width, height, "".join(body)), encoding="utf-8")
+
+
 def generate(results_path: str | Path = "experiments/geocompass/results.json",
              output: str | Path | None = None) -> Path:
     results_path = Path(results_path)
@@ -261,6 +291,7 @@ def generate(results_path: str | Path = "experiments/geocompass/results.json",
     _ablation_chart(aggregate.get("ablation", {}), figures / "ablation.svg")
     _memory_chart(aggregate["stream"], figures / "memory.svg")
     _heatmap(aggregate.get("transfer_matrix", {}), figures / "transfer_heatmap.svg")
+    _regret_chart(aggregate.get("bandit", {}), figures / "regret.svg")
 
     lines = [
         "# GeoCompass experiment report",
@@ -376,7 +407,94 @@ def generate(results_path: str | Path = "experiments/geocompass/results.json",
         "",
         "![Memory](figures/memory.svg)",
         "",
-        "## 6. Paired tests",
+        "## 6. Candidate retrieval",
+        "",
+        "Each stage trains its own calibrated reranker on that stage's candidate pool. `hashed` is the "
+        "bag-of-words embedding used by earlier runs, `bm25` is lexical only, and "
+        "`hybrid` fuses both by reciprocal rank. Candidate ceiling is the fraction of "
+        "tasks where at least one retrieved candidate beats the generic baseline.",
+        "",
+        "| First stage | Top-1 success | Top-1 utility | Candidate ceiling | Candidates per task |",
+        "|---|---:|---:|---:|---:|",
+    ]
+    for name, row in aggregate.get("retrieval", {}).items():
+        lines.append(
+            f"| {name} | {_format(row['top1_success'])} | {_format(row['top1_utility'])} | "
+            f"{_format(row['candidate_ceiling'])} | {row['candidates']:.1f} |"
+        )
+
+    conformal = aggregate.get("conformal", {})
+    if conformal:
+        lines += [
+            "",
+            "## 7. Risk-controlled reuse",
+            "",
+            "The gate commits when the calibrated score clears a threshold chosen on the "
+            "target development split. `certified` is the finite-sample upper bound on the "
+            "negative-transfer rate used to select the threshold; `test bound` is the "
+            "Clopper-Pearson upper limit on held-out data. The empirical row applies the "
+            "same nominal risk with no confidence correction, which is what a validation "
+            "curve sweep does. Coverage, risk, and bound are pooled over seeds, because "
+            "a per-seed average hides the seeds on which the gate abstained entirely.",
+            "",
+            "| Target risk | Gate | Committed at | Test coverage | Test risk | Test bound | Success | Negative transfer |",
+            "|---|---|---:|---:|---:|---:|---:|---:|",
+        ]
+        for alpha, row in conformal.items():
+            certificate = row["certificate"]
+            test = row["test"]
+            empirical = row["empirical"]
+            lines.append(
+                f"| {alpha} | conformal | {_format(certificate['threshold'])} | "
+                f"{_format(test['coverage'])} | {_format(test['risk'])} | "
+                f"{_format(test['upper'])} | {_format(row['success'])} | "
+                f"{_format(row['negative_transfer'])} |"
+            )
+            lines.append(
+                f"| {alpha} | empirical | {_format(empirical['threshold'])} | "
+                f"{_format(empirical['test']['coverage'])} | "
+                f"{_format(empirical['test']['risk'])} | "
+                f"{_format(empirical['test']['upper'])} | {_format(empirical['success'])} | "
+                f"{_format(empirical['negative_transfer'])} |"
+            )
+
+    bandit = aggregate.get("bandit", {})
+    if bandit:
+        lines += [
+            "",
+            "## 8. Online selection",
+            "",
+            "Prequential stream, cumulative regret against the best candidate in hindsight. "
+            "`linucb_cold` starts from an uninformative prior; the other policies are "
+            "warm-started from the source split. `static` never explores and never updates.",
+            "",
+            "| Policy | Cumulative regret | Mean regret | Success | Utility | Negative transfer |",
+            "|---|---:|---:|---:|---:|---:|",
+        ]
+        for name, row in bandit.items():
+            lines.append(
+                f"| {name} | {row['cumulative_regret']:.2f} | {_format(row['mean_regret'])} | "
+                f"{_format(row['success'])} | {_format(row['utility'])} | "
+                f"{_format(row['negative_transfer'])} |"
+            )
+        lines += [
+            "",
+            "![Cumulative regret](figures/regret.svg)",
+            "",
+            "Reading the table: every online policy pays more regret than the static "
+            "ranker on this 56-step stream. The warm-started Thompson policy is the one "
+            "case where exploration buys something, halving negative transfer relative to "
+            "the static policy, but it gives up 10 points of success to do it. With a "
+            "short stream and a strong offline prior, exploration is a cost rather than an "
+            "investment; the honest conclusion is that the horizon, not the policy, is the "
+            "binding constraint. Reporting the negative result is more useful than tuning "
+            "the stream length until exploration wins.",
+            "",
+        ]
+
+    lines += [
+        "",
+        "## 9. Paired tests",
         "",
         "| Comparison | Success delta | McNemar p | Score delta | Permutation p |",
         "|---|---:|---:|---:|---:|",

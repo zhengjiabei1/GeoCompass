@@ -3,7 +3,7 @@
 The generator is intentionally small (32 x 32 pixels by default) and deterministic.  It
 produces realistic-enough spectral contrast for land-cover mapping and
 bi-temporal change detection while keeping every experiment CPU-only and
-reproducible.  Real GeoTIFF adapters can be added through :func:`load_geotiff`.
+reproducible.  Real GeoTIFF chips enter through :mod:`geocompass.realdata`.
 """
 from __future__ import annotations
 
@@ -325,17 +325,18 @@ def generate_scene(spec: TaskSpec, size: int | None = None) -> Scene:
     return scene
 
 
-def load_geotiff(*_args, **_kwargs):  # pragma: no cover - optional real-data hook
-    """Placeholder for a real-data adapter.
+def load_geotiff(path, band_names=None, labels_path=None, size=None,
+                 post_paths=None):
+    """Compatibility shim for the real-data adapter.
 
-    The benchmark stays dependency-free by default.  A real GeoTIFF loader can
-    implement this function with ``rasterio``/``tifffile`` in a separate
-    optional environment without changing the experiment code.
+    The benchmark stays dependency-free: ``geocompass.io`` decodes the file and
+    ``geocompass.realdata`` maps it onto a :class:`~geocompass.types.Scene`.
+    See ``docs/REAL_DATA.md`` for the contract and the supported encodings.
     """
-    raise NotImplementedError(
-        "Real GeoTIFF loading is an optional extension; install rasterio and "
-        "implement geocompass.raster.load_geotiff for your local data."
-    )
+    from .realdata import load_scene
+
+    return load_scene(path, band_names=band_names, labels_path=labels_path,
+                      size=size, post_paths=post_paths)
 
 
 def ndvi(red: float, nir: float) -> float:

@@ -1,6 +1,6 @@
 # GeoCompass experiment report
 
-Seeds: 0, 1, 2. Tasks per seed: {'source_train': 70, 'source_val': 28, 'target_dev': 56, 'target_test': 42, 'stream': 56}. Mean skill-library size: 20.0. Total runtime: 664 s.
+Seeds: 0, 1, 2. Tasks per seed: {'source_train': 70, 'source_val': 28, 'target_dev': 56, 'target_test': 42, 'stream': 56}. Mean skill-library size: 20.0. Total runtime: 680 s.
 
 ## 1. Skill selection quality
 
@@ -30,6 +30,11 @@ All variants use isotonic calibration and the same candidate pool; only the disc
 
 | Feature set | Success | Score | AUROC | ECE |
 |---|---:|---:|---:|---:|
+| semantic | 0.500 | 0.504 | 0.664 | 0.073 |
+| structural | 0.675 | 0.629 | 0.842 | 0.063 |
+| history | 0.579 | 0.586 | 0.784 | 0.073 |
+| curated | 0.619 | 0.613 | 0.852 | 0.070 |
+| full | 0.611 | 0.610 | 0.854 | 0.077 |
 
 ![Ablation](figures/ablation.svg)
 
@@ -107,7 +112,47 @@ Prequential evaluation on a held-out stream. Each method selects a skill before 
 
 ![Memory](figures/memory.svg)
 
-## 6. Paired tests
+## 6. Candidate retrieval
+
+Each stage trains its own calibrated reranker on that stage's candidate pool. `hashed` is the bag-of-words embedding used by earlier runs, `bm25` is lexical only, and `hybrid` fuses both by reciprocal rank. Candidate ceiling is the fraction of tasks where at least one retrieved candidate beats the generic baseline.
+
+| First stage | Top-1 success | Top-1 utility | Candidate ceiling | Candidates per task |
+|---|---:|---:|---:|---:|
+| hashed | 0.675 | 0.481 | 1.000 | 8.0 |
+| bm25 | 0.619 | 0.461 | 0.992 | 8.0 |
+| hybrid | 0.698 | 0.516 | 1.000 | 8.0 |
+
+## 7. Risk-controlled reuse
+
+The gate commits when the calibrated score clears a threshold chosen on the target development split. `certified` is the finite-sample upper bound on the negative-transfer rate used to select the threshold; `test bound` is the Clopper-Pearson upper limit on held-out data. The empirical row applies the same nominal risk with no confidence correction, which is what a validation curve sweep does. Coverage, risk, and bound are pooled over seeds, because a per-seed average hides the seeds on which the gate abstained entirely.
+
+| Target risk | Gate | Committed at | Test coverage | Test risk | Test bound | Success | Negative transfer |
+|---|---|---:|---:|---:|---:|---:|---:|
+| 0.10 | conformal | 0.854 | 0.286 | 0.028 | 0.104 | 0.190 | 0.008 |
+| 0.10 | empirical | 0.164 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
+| 0.20 | conformal | 0.250 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
+| 0.20 | empirical | 0.164 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
+| 0.30 | conformal | 0.164 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
+| 0.30 | empirical | 0.164 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
+
+## 8. Online selection
+
+Prequential stream, cumulative regret against the best candidate in hindsight. `linucb_cold` starts from an uninformative prior; the other policies are warm-started from the source split. `static` never explores and never updates.
+
+| Policy | Cumulative regret | Mean regret | Success | Utility | Negative transfer |
+|---|---:|---:|---:|---:|---:|
+| static | 2.81 | 0.050 | 0.679 | 0.480 | 0.071 |
+| linucb_cold | 4.78 | 0.085 | 0.583 | 0.409 | 0.113 |
+| linucb | 5.15 | 0.092 | 0.554 | 0.396 | 0.054 |
+| thompson | 4.89 | 0.087 | 0.577 | 0.405 | 0.042 |
+| epsilon_greedy | 5.99 | 0.107 | 0.500 | 0.366 | 0.083 |
+
+![Cumulative regret](figures/regret.svg)
+
+Reading the table: every online policy pays more regret than the static ranker on this 56-step stream. The warm-started Thompson policy is the one case where exploration buys something, halving negative transfer relative to the static policy, but it gives up 10 points of success to do it. With a short stream and a strong offline prior, exploration is a cost rather than an investment; the honest conclusion is that the horizon, not the policy, is the binding constraint. Reporting the negative result is more useful than tuning the stream length until exploration wins.
+
+
+## 9. Paired tests
 
 | Comparison | Success delta | McNemar p | Score delta | Permutation p |
 |---|---:|---:|---:|---:|

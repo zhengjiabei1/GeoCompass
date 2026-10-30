@@ -1,0 +1,4 @@
+stage,top1_success,top1_utility,candidate_ceiling,candidates
+hashed,0.6746,0.4810,1.0000,8.00
+bm25,0.6190,0.4612,0.9921,8.00
+hybrid,0.6984,0.5164,1.0000,8.00

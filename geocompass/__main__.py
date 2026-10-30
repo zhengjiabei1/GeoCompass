@@ -11,6 +11,7 @@ def main(argv: list[str] | None = None) -> int:
             "GeoCompass: calibrated skill selection and tiered memory\n\n"
             "Commands:\n"
             "  experiment [--seeds 0,1,2] [--k 8] [--budget 3] [--output DIR]\n"
+            "             [--retriever hashed|bm25|hybrid] [--no-ablations]\n"
             "  report     [--results PATH] [--output DIR]\n"
         )
         return 0
