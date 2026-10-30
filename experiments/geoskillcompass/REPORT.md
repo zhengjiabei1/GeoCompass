@@ -1,4 +1,4 @@
-# GeoSkillEvo experiment report
+# GeoSkillCompass experiment report
 
 Seeds: 0, 1, 2. Tasks per seed: {'source_train': 70, 'source_val': 28, 'target_dev': 56, 'target_test': 42, 'stream': 56}. Mean skill-library size: 20.0. Total runtime: 664 s.
 
@@ -119,6 +119,6 @@ Prequential evaluation on a held-out stream. Each method selects a skill before 
 ## Reproduction
 
 ```bash
-python -m geoskillevo.experiment --seeds 0,1,2 --output experiments/geoskillevo
-python -m geoskillevo.report
+python -m geoskillcompass.experiment --seeds 0,1,2 --output experiments/geoskillcompass
+python -m geoskillcompass.report
 ```

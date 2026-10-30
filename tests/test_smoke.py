@@ -1,10 +1,10 @@
-"""Fast smoke tests for the GeoSkillEvo benchmark."""
+"""Fast smoke tests for the GeoSkillCompass benchmark."""
 from __future__ import annotations
 
 import unittest
 
-from geoskillevo.raster import generate_scene
-from geoskillevo.tasks import FAMILIES, build_task_specs
+from geoskillcompass.raster import generate_scene
+from geoskillcompass.tasks import FAMILIES, build_task_specs
 
 
 class TestTaskFamilies(unittest.TestCase):

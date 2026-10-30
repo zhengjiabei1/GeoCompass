@@ -8,8 +8,8 @@
 ## Run
 
 ```bash
-python -m geoskillevo experiment --seeds 0,1,2 --output experiments/geoskillevo
-python -m geoskillevo report --results experiments/geoskillevo/results.json --output experiments/geoskillevo
+python -m geoskillcompass experiment --seeds 0,1,2 --output experiments/geoskillcompass
+python -m geoskillcompass report --results experiments/geoskillcompass/results.json --output experiments/geoskillcompass
 ```
 
 The default configuration uses 10 source-training and 6 target-test tasks per family, i.e. 70 and 42 tasks per seed. The run is CPU-only and takes roughly four minutes per seed on a laptop.
@@ -17,7 +17,7 @@ The default configuration uses 10 source-training and 6 target-test tasks per fa
 ## Outputs
 
 ```
-experiments/geoskillevo/
+experiments/geoskillcompass/
   results.json          task-level records and cross-seed aggregates
   REPORT.md             generated tables and figure links
   tables/*.csv          main tables in CSV form
@@ -32,7 +32,7 @@ Every task, scene, split, and candidate ordering is derived from the seed. The e
 
 ## Extending to real data
 
-`geoskillevo.raster.load_geotiff(path)` is the extension point for real scenes. A real scene must expose the same fields as `Scene`:
+`geoskillcompass.raster.load_geotiff(path)` is the extension point for real scenes. A real scene must expose the same fields as `Scene`:
 
 - `pre` and `post`: band name to a flat list of reflectance values.
 - `classes_pre` and `classes_post`: integer class labels.

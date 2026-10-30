@@ -334,7 +334,7 @@ def load_geotiff(*_args, **_kwargs):  # pragma: no cover - optional real-data ho
     """
     raise NotImplementedError(
         "Real GeoTIFF loading is an optional extension; install rasterio and "
-        "implement geoskillevo.raster.load_geotiff for your local data."
+        "implement geoskillcompass.raster.load_geotiff for your local data."
     )
 
 

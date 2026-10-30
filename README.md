@@ -1,8 +1,8 @@
-# GeoSkillEvo
+# GeoSkillCompass
 
 **Calibrated spatial-skill reuse and tiered experience memory for geospatial agents.**
 
-Large language models are increasingly used as geospatial agents that plan and call GIS and remote-sensing tools. A recurring failure is **negative transfer**: a spatial-analysis skill that worked on one task family is reused on an incompatible one, and the agent fails silently. GeoSkillEvo asks a simple question:
+Large language models are increasingly used as geospatial agents that plan and call GIS and remote-sensing tools. A recurring failure is **negative transfer**: a spatial-analysis skill that worked on one task family is reused on an incompatible one, and the agent fails silently. GeoSkillCompass asks a simple question:
 
 > When should a geospatial agent reuse an existing spatial-analysis skill, and when should it explore a new one?
 
@@ -35,7 +35,7 @@ The benchmark generates synthetic multi-band scenes with six spectral bands (`bl
 - `urban` — urban-expansion detection
 - `burn` — burn-scar detection
 
-Scenes vary by region, season, cloud cover, and resolution. The generator is deterministic and runs on CPU. Real GeoTIFF adapters can be added through `geoskillevo.raster.load_geotiff`.
+Scenes vary by region, season, cloud cover, and resolution. The generator is deterministic and runs on CPU. Real GeoTIFF adapters can be added through `geoskillcompass.raster.load_geotiff`.
 
 ## Results
 
@@ -63,7 +63,7 @@ Tiered memory, prequential stream:
 - Tiered memory keeps success at 0.780 while using about one sixth of the flat store's characters (9,535 vs. 57,315).
 - Budgeted retry reaches 0.746 success but raises negative transfer to 0.286; the gate is the safer operating point.
 
-Full tables and figures: [`experiments/geoskillevo/REPORT.md`](experiments/geoskillevo/REPORT.md).
+Full tables and figures: [`experiments/geoskillcompass/REPORT.md`](experiments/geoskillcompass/REPORT.md).
 
 The experiment reports:
 
@@ -76,16 +76,16 @@ The experiment reports:
 ## Reproduction
 
 ```bash
-python -m geoskillevo experiment --seeds 0,1,2 --output experiments/geoskillevo
-python -m geoskillevo report
+python -m geoskillcompass experiment --seeds 0,1,2 --output experiments/geoskillcompass
+python -m geoskillcompass report
 ```
 
-The runner writes `results.json`, CSV tables, SVG figures, and a generated `REPORT.md` under `experiments/geoskillevo/`.
+The runner writes `results.json`, CSV tables, SVG figures, and a generated `REPORT.md` under `experiments/geoskillcompass/`.
 
 ## Repository layout
 
 ```
-geoskillevo/
+geoskillcompass/
   types.py        shared task, scene, and skill dataclasses
   raster.py       synthetic multi-band scene generator
   tasks.py        task families and expert skill library
@@ -96,7 +96,7 @@ geoskillevo/
   experiment.py   end-to-end runner
   report.py       tables, figures, and REPORT.md
 experiments/
-  geoskillevo/    results, tables, figures, report
+  geoskillcompass/    results, tables, figures, report
 ```
 
 ## Design notes
@@ -111,11 +111,11 @@ experiments/
 If you use this code or benchmark, please cite:
 
 ```bibtex
-@misc{zheng2026geoskillevo,
-  title  = {GeoSkillEvo: Calibrated Spatial-Skill Reuse for Geospatial Agents},
+@misc{zheng2026geoskillcompass,
+  title  = {GeoSkillCompass: Calibrated Spatial-Skill Reuse for Geospatial Agents},
   author = {Zheng, Jiabei},
   year   = {2026},
-  url    = {https://github.com/zhengjiabei1/GeoSkillEvo}
+  url    = {https://github.com/zhengjiabei1/GeoSkillCompass}
 }
 ```
 
