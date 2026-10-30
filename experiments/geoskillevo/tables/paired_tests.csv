@@ -1,0 +1,5 @@
+pair,success_delta,mcnemar_p,score_delta,permutation_p
+isotonic_vs_semantic,0.1746,0.0000,0.1238,0.0002
+isotonic_vs_random,0.3254,0.0000,0.2400,0.0002
+temperature_vs_semantic,0.1825,0.0000,0.1268,0.0002
+temperature_vs_random,0.3333,0.0000,0.2430,0.0002

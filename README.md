@@ -39,7 +39,31 @@ Scenes vary by region, season, cloud cover, and resolution. The generator is det
 
 ## Results
 
-<!-- RESULTS -->
+Run: 3 seeds (0, 1, 2), 70 source-training and 42 target-test tasks per seed, 20-skill library, CPU-only, 664 s.
+
+| Method | Success | AUROC | ECE | Negative transfer |
+|---|---:|---:|---:|---:|
+| Semantic retrieval | 0.500 | 0.666 | 0.152 | 0.183 |
+| Logistic discriminator | 0.683 | 0.842 | 0.121 | 0.056 |
+| + isotonic calibration | 0.675 | 0.842 | 0.063 | 0.056 |
+| + transfer gate | **0.698** | **0.842** | **0.063** | **0.048** |
+
+Tiered memory, prequential stream:
+
+| Memory | Success | ECE | Records | Characters |
+|---|---:|---:|---:|---:|
+| None | 0.774 | 0.232 | 0 | 0 |
+| Flat | 0.780 | 0.113 | 616 | 57,315 |
+| Tiered | 0.780 | 0.131 | 106 | 9,535 |
+
+**Key findings**
+
+- Calibration lifts AUROC from 0.666 to 0.842 and cuts ECE from 0.152 to 0.063.
+- The transfer gate raises success from 0.675 to 0.698 and cuts negative transfer from 0.056 to 0.048.
+- Tiered memory keeps success at 0.780 while using about one sixth of the flat store's characters (9,535 vs. 57,315).
+- Budgeted retry reaches 0.746 success but raises negative transfer to 0.286; the gate is the safer operating point.
+
+Full tables and figures: [`experiments/geoskillevo/REPORT.md`](experiments/geoskillevo/REPORT.md).
 
 The experiment reports:
 
