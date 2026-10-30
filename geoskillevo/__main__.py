@@ -8,7 +8,7 @@ def main(argv: list[str] | None = None) -> int:
     argv = list(sys.argv[1:] if argv is None else argv)
     if not argv or argv[0] in {"-h", "--help", "help"}:
         print(
-            "SkillEvo: calibrated skill selection and tiered memory\n\n"
+            "GeoSkillEvo: calibrated skill selection and tiered memory\n\n"
             "Commands:\n"
             "  experiment [--seeds 0,1,2] [--k 8] [--budget 3] [--output DIR]\n"
             "  report     [--results PATH] [--output DIR]\n"

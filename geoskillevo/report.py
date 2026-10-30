@@ -263,7 +263,7 @@ def generate(results_path: str | Path = "experiments/geoskillevo/results.json",
     _heatmap(aggregate.get("transfer_matrix", {}), figures / "transfer_heatmap.svg")
 
     lines = [
-        "# SkillEvo experiment report",
+        "# GeoSkillEvo experiment report",
         "",
         f"Seeds: {', '.join(str(seed) for seed in results['config']['seeds'])}. "
         f"Tasks per seed: {seeds[0]['data']['tasks']}. "
@@ -404,7 +404,7 @@ def generate(results_path: str | Path = "experiments/geoskillevo/results.json",
 def main() -> int:
     import argparse
 
-    parser = argparse.ArgumentParser(description="Build SkillEvo report and figures")
+    parser = argparse.ArgumentParser(description="Build GeoSkillEvo report and figures")
     parser.add_argument("--results", default="experiments/geoskillevo/results.json")
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
