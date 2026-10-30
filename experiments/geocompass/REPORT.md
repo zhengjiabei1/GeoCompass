@@ -1,6 +1,6 @@
 # GeoCompass experiment report
 
-Seeds: 0, 1, 2. Tasks per seed: {'source_train': 70, 'source_val': 28, 'target_dev': 56, 'target_test': 42, 'stream': 56}. Mean skill-library size: 20.0. Total runtime: 680 s.
+Seeds: 0, 1, 2. Tasks per seed: {'source_train': 70, 'source_val': 28, 'target_dev': 56, 'target_test': 42, 'stream': 56}. Mean skill-library size: 20.0. Total runtime: 681 s.
 
 ## 1. Skill selection quality
 
@@ -135,7 +135,18 @@ The gate commits when the calibrated score clears a threshold chosen on the targ
 | 0.30 | conformal | 0.164 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
 | 0.30 | empirical | 0.164 | 1.000 | 0.056 | 0.092 | 0.675 | 0.056 |
 
-## 8. Online selection
+## 8. Candidate-pool sensitivity
+
+The same trained discriminator applied at several pool widths. The pool size is a free parameter of every retrieval-plus-rerank pipeline and is rarely reported; scores move because the rank feature and the feature normalisation depend on it.
+
+| Candidates | Success | Score | Negative transfer | Mean pool |
+|---:|---:|---:|---:|---:|
+| 4 | 0.611 | 0.574 | 0.135 | 4.0 |
+| 6 | 0.595 | 0.565 | 0.111 | 6.0 |
+| 8 | 0.675 | 0.629 | 0.056 | 8.0 |
+| 12 | 0.683 | 0.651 | 0.024 | 12.0 |
+
+## 9. Online selection
 
 Prequential stream, cumulative regret against the best candidate in hindsight. `linucb_cold` starts from an uninformative prior; the other policies are warm-started from the source split. `static` never explores and never updates.
 
@@ -152,7 +163,7 @@ Prequential stream, cumulative regret against the best candidate in hindsight. `
 Reading the table: every online policy pays more regret than the static ranker on this 56-step stream. The warm-started Thompson policy is the one case where exploration buys something, halving negative transfer relative to the static policy, but it gives up 10 points of success to do it. With a short stream and a strong offline prior, exploration is a cost rather than an investment; the honest conclusion is that the horizon, not the policy, is the binding constraint. Reporting the negative result is more useful than tuning the stream length until exploration wins.
 
 
-## 9. Paired tests
+## 10. Paired tests
 
 | Comparison | Success delta | McNemar p | McNemar p (Holm) | Score delta | Permutation p | Permutation p (Holm) |
 |---|---:|---:|---:|---:|---:|---:|

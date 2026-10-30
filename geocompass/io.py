@@ -641,6 +641,7 @@ def read_geotiff_scene(
 
 _WRITE_FORMATS = {
     "uint16": (16, 1, "H"),
+    "int16": (16, 2, "h"),
     "float32": (32, 3, "f"),
 }
 
@@ -712,14 +713,15 @@ def write_geotiff(
             raise ValueError(f"band has {len(band)} samples, expected {expected}")
 
     bits, sample_format_tag, code = _WRITE_FORMATS[sample_format]
-    if sample_format == "uint16":
+    if sample_format in {"uint16", "int16"}:
+        low, high = (0, 65535) if sample_format == "uint16" else (-32768, 32767)
         encoded: list[list[int | float]] = []
         for band in bands:
             values = []
             for value in band:
                 item = int(round(value))
-                if item < 0 or item > 65535:
-                    raise ValueError("uint16 sample out of range")
+                if item < low or item > high:
+                    raise ValueError(f"{sample_format} sample out of range")
                 values.append(item)
             encoded.append(values)
     else:

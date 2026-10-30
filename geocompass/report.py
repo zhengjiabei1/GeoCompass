@@ -458,11 +458,31 @@ def generate(results_path: str | Path = "experiments/geocompass/results.json",
                 f"{_format(empirical['negative_transfer'])} |"
             )
 
+    sensitivity = aggregate.get("sensitivity", {})
+    if sensitivity:
+        lines += [
+            "",
+            "## 8. Candidate-pool sensitivity",
+            "",
+            "The same trained discriminator applied at several pool widths. The pool size "
+            "is a free parameter of every retrieval-plus-rerank pipeline and is rarely "
+            "reported; scores move because the rank feature and the feature normalisation "
+            "depend on it.",
+            "",
+            "| Candidates | Success | Score | Negative transfer | Mean pool |",
+            "|---:|---:|---:|---:|---:|",
+        ]
+        for width, row in sensitivity.items():
+            lines.append(
+                f"| {width} | {_format(row['success'])} | {_format(row['score'])} | "
+                f"{_format(row['negative_transfer'])} | {row['pool_mean']:.1f} |"
+            )
+
     bandit = aggregate.get("bandit", {})
     if bandit:
         lines += [
             "",
-            "## 8. Online selection",
+            "## 9. Online selection",
             "",
             "Prequential stream, cumulative regret against the best candidate in hindsight. "
             "`linucb_cold` starts from an uninformative prior; the other policies are "
@@ -494,7 +514,7 @@ def generate(results_path: str | Path = "experiments/geocompass/results.json",
 
     lines += [
         "",
-        "## 9. Paired tests",
+        "## 10. Paired tests",
         "",
         "| Comparison | Success delta | McNemar p | McNemar p (Holm) | Score delta | Permutation p | Permutation p (Holm) |",
         "|---|---:|---:|---:|---:|---:|---:|",

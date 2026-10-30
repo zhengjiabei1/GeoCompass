@@ -114,3 +114,17 @@ pool and the same features (structural set, no memory):
 Reward is `0.5 * (utility + 1)` clipped to `[0, 1]`. Regret is measured against
 the best candidate executed on that task, which is available because the runner
 evaluates every candidate for the report anyway.
+
+### Candidate-pool sensitivity
+
+The same trained discriminator is evaluated at pool widths 4, 6, 8, and 12. The
+pool size is a free parameter of every retrieval-plus-rerank pipeline and is
+rarely reported, while the rank feature and the feature normalisation both
+depend on it.
+
+### Stream horizon
+
+The default stream is 8 tasks per family (56 steps). `--stream N` changes it;
+`experiments/horizon16/COMPARISON.md` reports the 56-versus-112 comparison and
+the marginal regret per extra step, which is the quantity that shows whether a
+policy is still learning.

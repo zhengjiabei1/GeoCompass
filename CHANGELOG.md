@@ -25,6 +25,13 @@
 - `geocompass/dataset.py` — manifest loader that turns a directory of chips into
   the same splits, scenes, and skill library the synthetic generator produces,
   so `--dataset DIR` runs the whole pipeline on real imagery.
+- `geocompass/prepare.py` and `scripts/prepare_sen1floods11.py` — band
+  selection, reflectance rescaling, label remapping, and manifest emission for a
+  downloaded chip collection, with a dry-run mode.
+- Candidate-pool sensitivity: the same trained discriminator applied at four
+  pool widths, because the pool size is a free parameter that is rarely
+  reported.
+- `--stream` to change the prequential stream length per family.
 - Holm-Bonferroni adjustment over the paired-test family, reported next to the
   raw p-values.
 - `docs/RELATED_WORK.md` — what each component was borrowed from, what was

@@ -31,6 +31,7 @@ from .transfer import diagnose, gate_scores
 from .types import Outcome, Scene, Skill, TaskSpec
 
 CONFORMAL_ALPHAS = (0.10, 0.20, 0.30)
+SENSITIVITY_K = (4, 6, 8, 12)
 
 DEFAULT_COUNTS = {
     "source_train": 10,
@@ -764,6 +765,36 @@ def _bandit_experiment(stream_tasks: list[TaskSpec], scenes: dict[str, Scene],
     return output
 
 
+# ------------------------------------------------------------- sensitivity
+
+
+def _k_sensitivity(library: list[Skill], test_tasks: list[TaskSpec],
+                   scenes: dict[str, Scene], memory: ExperienceMemory, model,
+                   values: tuple[int, ...] = SENSITIVITY_K) -> dict:
+    """How much of the result depends on the candidate-pool size?
+
+    The pool size is a free parameter of every retrieval-plus-rerank pipeline
+    and is rarely reported.  The same trained model is applied at several pool
+    widths; the per-task scores move because ``semantic_rank`` and the feature
+    normalisation depend on the pool.
+    """
+    source = build_candidate_source("hashed", library)
+    output = {}
+    for value in values:
+        rows = []
+        sizes = []
+        for task in test_tasks:
+            records = _candidate_records(task, scenes[task.task_id], source, value)
+            sizes.append(len(records))
+            rows.append(_evaluate_records(records, model, memory, k=value, budget=1,
+                                          task=task))
+        output[str(value)] = {
+            "summary": _summarise(rows),
+            "pool_mean": stats.mean(sizes),
+        }
+    return output
+
+
 def run_seed(seed: int, config: Config) -> dict:
     started = time.time()
     clear_caches()
@@ -918,6 +949,10 @@ def run_seed(seed: int, config: Config) -> dict:
             isotonic,
         )
 
+    sensitivity = {}
+    if config.include_ablations:
+        sensitivity = _k_sensitivity(library, test_tasks, scenes, source_memory, isotonic)
+
     bandit_warm = []
     for record in train_records:
         features = extract_features(
@@ -1001,6 +1036,7 @@ def run_seed(seed: int, config: Config) -> dict:
         "stream": stream,
         "retrieval": retrieval,
         "conformal": conformal,
+        "sensitivity": sensitivity,
         "bandit": bandit,
         "ablation": ablation,
     }
@@ -1190,6 +1226,18 @@ def aggregate(seed_results: list[dict]) -> dict:
                 },
             }
 
+    sensitivity = {}
+    if seed_results and seed_results[0].get("sensitivity"):
+        for width in seed_results[0]["sensitivity"]:
+            blocks = [result["sensitivity"][width] for result in seed_results]
+            sensitivity[width] = {
+                "success": stats.mean([block["summary"]["success"] for block in blocks]),
+                "score": stats.mean([block["summary"]["score"] for block in blocks]),
+                "negative_transfer": stats.mean(
+                    [block["summary"]["negative_transfer"] for block in blocks]),
+                "pool_mean": stats.mean([block["pool_mean"] for block in blocks]),
+            }
+
     bandit = {}
     if seed_results and seed_results[0].get("bandit"):
         for name in seed_results[0]["bandit"]:
@@ -1215,6 +1263,7 @@ def aggregate(seed_results: list[dict]) -> dict:
         "stream": stream,
         "retrieval": retrieval,
         "conformal": conformal,
+        "sensitivity": sensitivity,
         "bandit": bandit,
         "ablation": ablation,
         "paired": paired,
@@ -1313,6 +1362,14 @@ def _write_csv(results: dict, output: Path) -> None:
             )
         (tables / "conformal.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
+    sensitivity = aggregate.get("sensitivity")
+    if sensitivity:
+        lines = ["pool_size,success,score,negative_transfer,pool_mean"]
+        for width, row in sensitivity.items():
+            lines.append(f"{width},{row['success']:.4f},{row['score']:.4f},"
+                         f"{row['negative_transfer']:.4f},{row['pool_mean']:.2f}")
+        (tables / "sensitivity_k.csv").write_text("\n".join(lines) + "\n", encoding="utf-8")
+
     bandit = aggregate.get("bandit")
     if bandit:
         lines = ["policy,cumulative_regret,mean_regret,success,utility,negative_transfer"]
@@ -1333,12 +1390,20 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--budget", type=int, default=3)
     parser.add_argument("--output", default="experiments/geocompass")
     parser.add_argument("--retriever", default="hashed", choices=("hashed", "bm25", "hybrid"))
+    parser.add_argument("--stream", type=int, default=None,
+                        help="stream tasks per family (default 8)")
     parser.add_argument("--dataset", default=None,
                         help="manifest.json (or its directory) describing real chips")
     parser.add_argument("--no-ablations", action="store_true")
     args = parser.parse_args(argv)
+    counts = dict(DEFAULT_COUNTS)
+    if args.stream is not None:
+        if args.stream <= 0:
+            parser.error("--stream must be positive")
+        counts["stream"] = args.stream
     config = Config(
         seeds=[int(value) for value in args.seeds.split(",") if value],
+        counts=counts,
         k=args.k,
         budget=args.budget,
         output=args.output,

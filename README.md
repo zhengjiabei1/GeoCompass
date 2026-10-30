@@ -95,7 +95,8 @@ Online selection, 56-step stream, cumulative regret:
 - Tiered memory keeps success at 0.780 while using about one sixth of the flat store's characters (9,535 vs. 57,315).
 - Fusing BM25 with the description embedding raises top-1 success from 0.675 to 0.698, so part of what earlier looked like a reranking gain was a retrieval gap.
 - A certified 10% negative-transfer gate costs 71% of coverage; at a 20% target it commits to every task while the bound still holds. The empirical-only threshold happens to satisfy the bound on this test split, which is exactly why it cannot be trusted to.
-- Every online policy pays more regret than the static ranker on a 56-step stream. Warm-started Thompson sampling halves negative transfer but loses 10 points of success; exploration is not free at this horizon.
+- Every online policy pays more regret than the static ranker on a 56-step stream. Doubling the stream to 112 steps does not reverse the ordering: the warm-started policies improve (marginal regret 0.054 per step against 0.091 overall) but stay above the static policy's 0.045, so exploration still does not pay at this horizon (`experiments/horizon16/COMPARISON.md`).
+- The result is not an artefact of the candidate-pool width: success stays in 0.60–0.68 and negative transfer falls monotonically from 0.135 at four candidates to 0.024 at twelve, so the default of eight is a reasonable operating point rather than a cherry-picked optimum.
 - Budgeted retry reaches 0.746 success but raises negative transfer to 0.286; the gate is the safer operating point.
 
 Full tables and figures: [`experiments/geocompass/REPORT.md`](experiments/geocompass/REPORT.md).
@@ -135,6 +136,7 @@ geocompass/
   io.py           dependency-free GeoTIFF/BigTIFF reader and test writer
   realdata.py     GeoTIFF chip to Scene adapter
   dataset.py      manifest loader for a collection of real chips
+  prepare.py      band selection and label remapping for chip conversion
   tasks.py        task families and expert skill library
   features.py     structural and semantic features
   retrieval.py    BM25 and reciprocal-rank fusion first stages
@@ -145,11 +147,14 @@ geocompass/
   transfer.py     transfer diagnosis and gating
   experiment.py   end-to-end runner
   report.py       tables, figures, and REPORT.md
+scripts/
+  prepare_sen1floods11.py  chip conversion for that collection
 docs/
   RELATED_WORK.md where each component comes from
   REAL_DATA.md    running on real imagery
 experiments/
   geocompass/     results, tables, figures, report
+  horizon16/      stream-length comparison and its own results
 ```
 
 ## Documentation

@@ -1,0 +1,5 @@
+strategy,success,score,negative_transfer
+none,0.6746,0.6287,0.0556
+semantic,0.5794,0.5588,0.1032
+outcome,0.6746,0.6287,0.0556
+proposed,0.6984,0.6469,0.0476

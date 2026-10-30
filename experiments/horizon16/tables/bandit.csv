@@ -1,0 +1,6 @@
+policy,cumulative_regret,mean_regret,success,utility,negative_transfer
+static,5.5848,0.0499,0.6429,0.4785,0.0685
+linucb_cold,9.9218,0.0886,0.5149,0.4011,0.0685
+linucb,10.1723,0.0908,0.5298,0.3966,0.0714
+thompson,10.0748,0.0900,0.5387,0.3983,0.0625
+epsilon_greedy,10.2389,0.0914,0.5298,0.3954,0.0833

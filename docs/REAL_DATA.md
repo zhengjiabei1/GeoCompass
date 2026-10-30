@@ -119,6 +119,23 @@ hand-labelled mask uses -1 for no data, 0 for land, and 1 for water; remap -1 to
 the nodata value before writing the label raster, otherwise unobserved pixels
 count as land.
 
+## Converting a Sen1Floods11 download
+
+`scripts/prepare_sen1floods11.py` does the mechanical part: it selects the six
+bands, rescales reflectance, remaps the label encoding, and writes the manifest.
+
+```bash
+python scripts/prepare_sen1floods11.py \
+    --images data/raw/S2Hand --labels data/raw/LabelHand \
+    --out data/sen1floods11 --family flood --size 32 \
+    --split-map splits.json
+```
+
+`splits.json` maps chip ids to splits; without it every chip goes to
+`--default-split`. `--dry-run` lists what would be converted, and `--limit`
+caps the run, which is useful for a first pass. The script never downloads and
+never writes outside `--out`.
+
 ## What to expect
 
 The synthetic generator produces clean, spatially contiguous scenes with
