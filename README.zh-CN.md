@@ -1,8 +1,8 @@
-# GeoSkillCompass
+# GeoCompass
 
 **面向地理空间智能体的校准式空间技能复用与分层经验记忆。**
 
-LLM 正在被用作地理空间智能体，负责规划并调用 GIS 与遥感工具。一个常见失败是**负迁移**：在某一类任务上有效的空间分析技能，被错误地复用到不兼容的任务上，智能体却不会主动发现。GeoSkillCompass 关注一个简单问题：
+LLM 正在被用作地理空间智能体，负责规划并调用 GIS 与遥感工具。一个常见失败是**负迁移**：在某一类任务上有效的空间分析技能，被错误地复用到不兼容的任务上，智能体却不会主动发现。GeoCompass 关注一个简单问题：
 
 > 地理空间智能体应该在什么时候复用已有的空间分析技能，什么时候应该探索新技能？
 
@@ -35,7 +35,7 @@ LLM 正在被用作地理空间智能体，负责规划并调用 GIS 与遥感�
 - `urban`：城市扩张检测
 - `burn`：火烧迹地检测
 
-场景在区域、季节、云量和分辨率上变化。生成器确定性、CPU 可运行。真实 GeoTIFF 可以通过 `geoskillcompass.raster.load_geotiff` 接入。
+场景在区域、季节、云量和分辨率上变化。生成器确定性、CPU 可运行。真实 GeoTIFF 可以通过 `geocompass.raster.load_geotiff` 接入。
 
 ## 结果
 
@@ -63,16 +63,16 @@ LLM 正在被用作地理空间智能体，负责规划并调用 GIS 与遥感�
 - 分层记忆在保持 0.780 成功率的同时，字符数约为扁平记忆的六分之一（9,535 对 57,315）。
 - 预算重试可把成功率推到 0.746，但负迁移升到 0.286；门控是更稳的工作点。
 
-完整表格和图见 [`experiments/geoskillcompass/REPORT.md`](experiments/geoskillcompass/REPORT.md)。
+完整表格和图见 [`experiments/geocompass/REPORT.md`](experiments/geocompass/REPORT.md)。
 
 ## 复现
 
 ```bash
-python -m geoskillcompass experiment --seeds 0,1,2 --output experiments/geoskillcompass
-python -m geoskillcompass report
+python -m geocompass experiment --seeds 0,1,2 --output experiments/geocompass
+python -m geocompass report
 ```
 
-运行后会在 `experiments/geoskillcompass/` 下生成 `results.json`、CSV 表格、SVG 图和 `REPORT.md`。
+运行后会在 `experiments/geocompass/` 下生成 `results.json`、CSV 表格、SVG 图和 `REPORT.md`。
 
 ## 说明
 

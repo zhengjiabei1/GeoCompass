@@ -1,4 +1,4 @@
-"""Dependency-free statistics for the GeoSkillCompass experiments."""
+"""Dependency-free statistics for the GeoCompass experiments."""
 from __future__ import annotations
 
 import math

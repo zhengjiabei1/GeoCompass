@@ -1,10 +1,10 @@
 .PHONY: run report test
 
 run:
-	python -m geoskillcompass experiment --seeds 0,1,2 --output experiments/geoskillcompass
+	python -m geocompass experiment --seeds 0,1,2 --output experiments/geocompass
 
 report:
-	python -m geoskillcompass report
+	python -m geocompass report
 
 test:
 	python -m unittest discover -s tests -v

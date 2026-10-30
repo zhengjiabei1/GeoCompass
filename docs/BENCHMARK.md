@@ -23,7 +23,7 @@ Each scene is a 32 x 32 grid with six surface-reflectance bands (`blue`, `green`
 - **Cloud** — 0.0, 0.08, 0.16. Cloud adds missing observations.
 - **Resolution** — 10 m or 20 m. Resolution changes the effective spatial support.
 
-The generator is deterministic given the task seed. `geoskillcompass.raster.load_geotiff` is the extension point for real scenes.
+The generator is deterministic given the task seed. `geocompass.raster.load_geotiff` is the extension point for real scenes.
 
 ## Splits
 

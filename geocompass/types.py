@@ -1,4 +1,4 @@
-"""Shared data structures for the GeoSkillCompass benchmark."""
+"""Shared data structures for the GeoCompass benchmark."""
 from __future__ import annotations
 
 from dataclasses import dataclass, field

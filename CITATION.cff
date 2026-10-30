@@ -1,9 +1,9 @@
 cff-version: 1.2.0
 message: "If you use this code or benchmark, please cite it."
-title: "GeoSkillCompass: Calibrated Spatial-Skill Reuse for Geospatial Agents"
+title: "GeoCompass: Calibrated Spatial-Skill Reuse for Geospatial Agents"
 authors:
   - family-names: Zheng
     given-names: Jiabei
 year: 2026
-url: "https://github.com/zhengjiabei1/GeoSkillCompass"
+url: "https://github.com/zhengjiabei1/GeoCompass"
 license: MIT

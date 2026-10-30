@@ -1,8 +1,8 @@
-# GeoSkillCompass
+# GeoCompass
 
 **Calibrated spatial-skill reuse and tiered experience memory for geospatial agents.**
 
-Large language models are increasingly used as geospatial agents that plan and call GIS and remote-sensing tools. A recurring failure is **negative transfer**: a spatial-analysis skill that worked on one task family is reused on an incompatible one, and the agent fails silently. GeoSkillCompass asks a simple question:
+Large language models are increasingly used as geospatial agents that plan and call GIS and remote-sensing tools. A recurring failure is **negative transfer**: a spatial-analysis skill that worked on one task family is reused on an incompatible one, and the agent fails silently. GeoCompass asks a simple question:
 
 > When should a geospatial agent reuse an existing spatial-analysis skill, and when should it explore a new one?
 
@@ -35,7 +35,7 @@ The benchmark generates synthetic multi-band scenes with six spectral bands (`bl
 - `urban` — urban-expansion detection
 - `burn` — burn-scar detection
 
-Scenes vary by region, season, cloud cover, and resolution. The generator is deterministic and runs on CPU. Real GeoTIFF adapters can be added through `geoskillcompass.raster.load_geotiff`.
+Scenes vary by region, season, cloud cover, and resolution. The generator is deterministic and runs on CPU. Real GeoTIFF adapters can be added through `geocompass.raster.load_geotiff`.
 
 ## Results
 
@@ -63,7 +63,7 @@ Tiered memory, prequential stream:
 - Tiered memory keeps success at 0.780 while using about one sixth of the flat store's characters (9,535 vs. 57,315).
 - Budgeted retry reaches 0.746 success but raises negative transfer to 0.286; the gate is the safer operating point.
 
-Full tables and figures: [`experiments/geoskillcompass/REPORT.md`](experiments/geoskillcompass/REPORT.md).
+Full tables and figures: [`experiments/geocompass/REPORT.md`](experiments/geocompass/REPORT.md).
 
 The experiment reports:
 
@@ -76,16 +76,16 @@ The experiment reports:
 ## Reproduction
 
 ```bash
-python -m geoskillcompass experiment --seeds 0,1,2 --output experiments/geoskillcompass
-python -m geoskillcompass report
+python -m geocompass experiment --seeds 0,1,2 --output experiments/geocompass
+python -m geocompass report
 ```
 
-The runner writes `results.json`, CSV tables, SVG figures, and a generated `REPORT.md` under `experiments/geoskillcompass/`.
+The runner writes `results.json`, CSV tables, SVG figures, and a generated `REPORT.md` under `experiments/geocompass/`.
 
 ## Repository layout
 
 ```
-geoskillcompass/
+geocompass/
   types.py        shared task, scene, and skill dataclasses
   raster.py       synthetic multi-band scene generator
   tasks.py        task families and expert skill library
@@ -96,7 +96,7 @@ geoskillcompass/
   experiment.py   end-to-end runner
   report.py       tables, figures, and REPORT.md
 experiments/
-  geoskillcompass/    results, tables, figures, report
+  geocompass/    results, tables, figures, report
 ```
 
 ## Design notes
@@ -111,11 +111,11 @@ experiments/
 If you use this code or benchmark, please cite:
 
 ```bibtex
-@misc{zheng2026geoskillcompass,
-  title  = {GeoSkillCompass: Calibrated Spatial-Skill Reuse for Geospatial Agents},
+@misc{zheng2026geocompass,
+  title  = {GeoCompass: Calibrated Spatial-Skill Reuse for Geospatial Agents},
   author = {Zheng, Jiabei},
   year   = {2026},
-  url    = {https://github.com/zhengjiabei1/GeoSkillCompass}
+  url    = {https://github.com/zhengjiabei1/GeoCompass}
 }
 ```
 

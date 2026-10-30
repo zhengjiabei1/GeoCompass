@@ -247,7 +247,7 @@ def _format(value: float, digits: int = 3) -> str:
     return f"{value:.{digits}f}"
 
 
-def generate(results_path: str | Path = "experiments/geoskillcompass/results.json",
+def generate(results_path: str | Path = "experiments/geocompass/results.json",
              output: str | Path | None = None) -> Path:
     results_path = Path(results_path)
     results = json.loads(results_path.read_text(encoding="utf-8"))
@@ -263,7 +263,7 @@ def generate(results_path: str | Path = "experiments/geoskillcompass/results.jso
     _heatmap(aggregate.get("transfer_matrix", {}), figures / "transfer_heatmap.svg")
 
     lines = [
-        "# GeoSkillCompass experiment report",
+        "# GeoCompass experiment report",
         "",
         f"Seeds: {', '.join(str(seed) for seed in results['config']['seeds'])}. "
         f"Tasks per seed: {seeds[0]['data']['tasks']}. "
@@ -391,8 +391,8 @@ def generate(results_path: str | Path = "experiments/geoskillcompass/results.jso
         "## Reproduction",
         "",
         "```bash",
-        "python -m geoskillcompass.experiment --seeds 0,1,2 --output experiments/geoskillcompass",
-        "python -m geoskillcompass.report",
+        "python -m geocompass.experiment --seeds 0,1,2 --output experiments/geocompass",
+        "python -m geocompass.report",
         "```",
         "",
     ]
@@ -404,8 +404,8 @@ def generate(results_path: str | Path = "experiments/geoskillcompass/results.jso
 def main() -> int:
     import argparse
 
-    parser = argparse.ArgumentParser(description="Build GeoSkillCompass report and figures")
-    parser.add_argument("--results", default="experiments/geoskillcompass/results.json")
+    parser = argparse.ArgumentParser(description="Build GeoCompass report and figures")
+    parser.add_argument("--results", default="experiments/geocompass/results.json")
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
     path = generate(args.results, args.output)
