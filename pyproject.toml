@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "geoskillevo"
+version = "0.1.0"
+description = "Calibrated spatial-skill reuse and tiered experience memory for geospatial agents"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{ name = "Jiabei Zheng" }]
+keywords = [
+  "geospatial",
+  "geoai",
+  "llm-agents",
+  "skill-reuse",
+  "negative-transfer",
+  "calibration",
+  "remote-sensing",
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+  "Topic :: Scientific/Engineering :: GIS",
+]
+dependencies = []
+
+[project.scripts]
+geoskillevo = "geoskillevo.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["geoskillevo*"]
