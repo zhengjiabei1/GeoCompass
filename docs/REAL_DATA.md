@@ -54,6 +54,48 @@ Only the first image file directory is read.  If a collection ships Cloud
 Optimized GeoTIFFs with JPEG compression, re-encode the chip to Deflate first
 (`gdal_translate -co COMPRESS=DEFLATE`) or extend `io.py`.
 
+## Manifest and command line
+
+A collection is described by a `manifest.json`; no code changes are needed to
+run on it.
+
+```json
+{
+  "name": "sen1floods11-sample",
+  "band_names": ["blue", "green", "red", "nir", "swir1", "swir2"],
+  "scale": 0.0001,
+  "size": 32,
+  "entries": [
+    {
+      "id": "Bolivia_103757",
+      "family": "flood",
+      "split": "target_test",
+      "pre": ["Bolivia_103757_S2Hand.tif"],
+      "labels": "Bolivia_103757_LabelHand.tif",
+      "region": "bolivia",
+      "season": "wet"
+    }
+  ]
+}
+```
+
+- `pre` / `post` are a list of per-band paths in `band_names` order, the same
+  list keyed by band name, or a single multi-band file.
+- `scale` and `offset` are applied to every band; they depend on the product.
+- `size` resamples each chip to a square; omit it to keep the source size.
+- `split` is one of `source_train`, `source_val`, `target_dev`, `target_test`,
+  `stream`. A collection that only defines families may omit `source_train`; one
+  representative per family is then used to induce the skill library.
+
+```bash
+python -m geocompass experiment --dataset data/sen1floods11 --seeds 0,1,2 --output experiments/real
+python -m geocompass report --results experiments/real/results.json
+```
+
+The runner reports the same metrics as on synthetic data, so the comparison that
+matters is between methods within the collection rather than against the
+synthetic numbers.
+
 ## Building a directory of chips
 
 Any collection with per-pixel labels works.  Three are convenient because the
@@ -69,6 +111,13 @@ label semantics match families the benchmark already defines:
 The adapter needs six optical bands; collections that ship RGB only (EuroSAT)
 have to be paired with the corresponding Sentinel-2 scene, or restricted to the
 skills that only use visible bands, which the current library does not offer.
+
+Sen1Floods11 stores 13 Sentinel-2 bands in acquisition order, so the six bands
+used here are indices 1, 2, 3, 7, 11, 12 (`B02`, `B03`, `B04`, `B08`, `B11`,
+`B12`). Reflectance is stored as integers at 1e-4, hence `scale: 0.0001`. The
+hand-labelled mask uses -1 for no data, 0 for land, and 1 for water; remap -1 to
+the nodata value before writing the label raster, otherwise unobserved pixels
+count as land.
 
 ## What to expect
 

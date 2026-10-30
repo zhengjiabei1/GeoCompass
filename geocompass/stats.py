@@ -170,3 +170,24 @@ def percentile(values: list[float], fraction: float) -> float:
     ordered = sorted(values)
     index = min(len(ordered) - 1, max(0, int(round(fraction * (len(ordered) - 1)))))
     return ordered[index]
+
+
+def holm(pvalues: list[float]) -> list[float]:
+    """Holm-Bonferroni step-down adjustment, preserving input order.
+
+    The paired tests in the report form a family: the same comparison is made
+    against several baselines.  Reporting raw p-values for the whole family
+    inflates the chance of at least one spurious result, so both raw and
+    adjusted values are printed.
+    """
+    count = len(pvalues)
+    if count == 0:
+        return []
+    order = sorted(range(count), key=lambda index: pvalues[index])
+    adjusted = [0.0] * count
+    running = 0.0
+    for rank, index in enumerate(order):
+        value = min(1.0, (count - rank) * pvalues[index])
+        running = max(running, value)
+        adjusted[index] = running
+    return adjusted

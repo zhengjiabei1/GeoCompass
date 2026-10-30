@@ -117,6 +117,13 @@ python -m geocompass experiment --seeds 0,1,2 --output experiments/geocompass
 python -m geocompass report
 ```
 
+A collection of real chips runs through the same entry point once a
+`manifest.json` describes it; see [`docs/REAL_DATA.md`](docs/REAL_DATA.md).
+
+```bash
+python -m geocompass experiment --dataset data/sen1floods11 --seeds 0,1,2 --output experiments/real
+```
+
 The runner writes `results.json`, CSV tables, SVG figures, and a generated `REPORT.md` under `experiments/geocompass/`.
 
 ## Repository layout
@@ -127,6 +134,7 @@ geocompass/
   raster.py       synthetic multi-band scene generator
   io.py           dependency-free GeoTIFF/BigTIFF reader and test writer
   realdata.py     GeoTIFF chip to Scene adapter
+  dataset.py      manifest loader for a collection of real chips
   tasks.py        task families and expert skill library
   features.py     structural and semantic features
   retrieval.py    BM25 and reciprocal-rank fusion first stages

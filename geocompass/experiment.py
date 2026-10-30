@@ -51,6 +51,7 @@ class Config:
     output: str = "experiments/geocompass"
     include_ablations: bool = True
     retriever: str = "hashed"
+    dataset: str | None = None
 
     def to_dict(self) -> dict:
         return {
@@ -61,6 +62,7 @@ class Config:
             "memory_mode": self.memory_mode,
             "include_ablations": self.include_ablations,
             "retriever": self.retriever,
+            "dataset": self.dataset,
         }
 
 
@@ -79,6 +81,10 @@ def build_candidate_source(kind: str, library: list[Skill]) -> object:
 
 
 def _make_data(seed: int, config: Config) -> tuple[dict[str, list[TaskSpec]], dict[str, Scene], list[Skill]]:
+    if config.dataset:
+        from .dataset import load_dataset
+
+        return load_dataset(config.dataset, seed)
     splits = build_task_specs(seed, config.counts)
     scenes = {}
     for tasks in splits.values():
@@ -1107,6 +1113,14 @@ def aggregate(seed_results: list[dict]) -> dict:
                 "score_delta": stats.mean(scores_left) - stats.mean(scores_right),
                 "score_permutation_p": stats.sign_permutation(scores_left, scores_right),
             }
+    if paired:
+        keys = list(paired)
+        mcnemar_adjusted = stats.holm([paired[key]["success_mcnemar_p"] for key in keys])
+        permutation_adjusted = stats.holm([paired[key]["score_permutation_p"] for key in keys])
+        for key, mcnemar_p, permutation_p in zip(keys, mcnemar_adjusted, permutation_adjusted):
+            paired[key]["success_mcnemar_p_holm"] = mcnemar_p
+            paired[key]["score_permutation_p_holm"] = permutation_p
+
     ablation = {}
     if seed_results and seed_results[0].get("ablation"):
         for name in seed_results[0]["ablation"]:
@@ -1319,6 +1333,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--budget", type=int, default=3)
     parser.add_argument("--output", default="experiments/geocompass")
     parser.add_argument("--retriever", default="hashed", choices=("hashed", "bm25", "hybrid"))
+    parser.add_argument("--dataset", default=None,
+                        help="manifest.json (or its directory) describing real chips")
     parser.add_argument("--no-ablations", action="store_true")
     args = parser.parse_args(argv)
     config = Config(
@@ -1328,6 +1344,7 @@ def main(argv: list[str] | None = None) -> int:
         output=args.output,
         include_ablations=not args.no_ablations,
         retriever=args.retriever,
+        dataset=args.dataset,
     )
     results = run(config)
     print(json.dumps(results["aggregate"]["methods"], indent=2))

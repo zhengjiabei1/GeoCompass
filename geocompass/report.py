@@ -496,13 +496,15 @@ def generate(results_path: str | Path = "experiments/geocompass/results.json",
         "",
         "## 9. Paired tests",
         "",
-        "| Comparison | Success delta | McNemar p | Score delta | Permutation p |",
-        "|---|---:|---:|---:|---:|",
+        "| Comparison | Success delta | McNemar p | McNemar p (Holm) | Score delta | Permutation p | Permutation p (Holm) |",
+        "|---|---:|---:|---:|---:|---:|---:|",
     ]
     for name, row in aggregate["paired"].items():
         lines.append(
             f"| {name} | {_format(row['success_delta'])} | {_format(row['success_mcnemar_p'], 4)} | "
-            f"{_format(row['score_delta'])} | {_format(row['score_permutation_p'], 4)} |"
+            f"{_format(row.get('success_mcnemar_p_holm', row['success_mcnemar_p']), 4)} | "
+            f"{_format(row['score_delta'])} | {_format(row['score_permutation_p'], 4)} | "
+            f"{_format(row.get('score_permutation_p_holm', row['score_permutation_p']), 4)} |"
         )
     lines += [
         "",

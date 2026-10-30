@@ -121053,25 +121053,33 @@
         "success_delta": 0.17460317460317465,
         "success_mcnemar_p": 2.744048833847046e-05,
         "score_delta": 0.12375408814310407,
-        "score_permutation_p": 0.0001999600079984003
+        "score_permutation_p": 0.0001999600079984003,
+        "success_mcnemar_p_holm": 3.0472874641418457e-05,
+        "score_permutation_p_holm": 0.0007998400319936012
       },
       "isotonic_vs_random": {
         "success_delta": 0.32539682539682546,
         "success_mcnemar_p": 5.805322444984995e-09,
         "score_delta": 0.23996167352637499,
-        "score_permutation_p": 0.0001999600079984003
+        "score_permutation_p": 0.0001999600079984003,
+        "success_mcnemar_p_holm": 1.7415967334954985e-08,
+        "score_permutation_p_holm": 0.0007998400319936012
       },
       "temperature_vs_semantic": {
         "success_delta": 0.18253968253968256,
         "success_mcnemar_p": 1.5236437320709229e-05,
         "score_delta": 0.12680277642355542,
-        "score_permutation_p": 0.0001999600079984003
+        "score_permutation_p": 0.0001999600079984003,
+        "success_mcnemar_p_holm": 3.0472874641418457e-05,
+        "score_permutation_p_holm": 0.0007998400319936012
       },
       "temperature_vs_random": {
         "success_delta": 0.33333333333333337,
         "success_mcnemar_p": 3.256530156647841e-09,
         "score_delta": 0.24301036180682634,
-        "score_permutation_p": 0.0001999600079984003
+        "score_permutation_p": 0.0001999600079984003,
+        "success_mcnemar_p_holm": 1.3026120626591364e-08,
+        "score_permutation_p_holm": 0.0007998400319936012
       }
     },
     "library_size": 20.0,

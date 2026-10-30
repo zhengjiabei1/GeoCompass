@@ -154,12 +154,12 @@ Reading the table: every online policy pays more regret than the static ranker o
 
 ## 9. Paired tests
 
-| Comparison | Success delta | McNemar p | Score delta | Permutation p |
-|---|---:|---:|---:|---:|
-| isotonic_vs_semantic | 0.175 | 0.0000 | 0.124 | 0.0002 |
-| isotonic_vs_random | 0.325 | 0.0000 | 0.240 | 0.0002 |
-| temperature_vs_semantic | 0.183 | 0.0000 | 0.127 | 0.0002 |
-| temperature_vs_random | 0.333 | 0.0000 | 0.243 | 0.0002 |
+| Comparison | Success delta | McNemar p | McNemar p (Holm) | Score delta | Permutation p | Permutation p (Holm) |
+|---|---:|---:|---:|---:|---:|---:|
+| isotonic_vs_semantic | 0.175 | 0.0000 | 0.0000 | 0.124 | 0.0002 | 0.0008 |
+| isotonic_vs_random | 0.325 | 0.0000 | 0.0000 | 0.240 | 0.0002 | 0.0008 |
+| temperature_vs_semantic | 0.183 | 0.0000 | 0.0000 | 0.127 | 0.0002 | 0.0008 |
+| temperature_vs_random | 0.333 | 0.0000 | 0.0000 | 0.243 | 0.0002 | 0.0008 |
 
 ## Reproduction
 

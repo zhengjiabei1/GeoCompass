@@ -22,6 +22,11 @@
   planar storage) plus a minimal writer used by the tests.
 - `geocompass/realdata.py` — adapter from decoded rasters to `Scene`, with an
   explicit band contract and a nodata mask.
+- `geocompass/dataset.py` — manifest loader that turns a directory of chips into
+  the same splits, scenes, and skill library the synthetic generator produces,
+  so `--dataset DIR` runs the whole pipeline on real imagery.
+- Holm-Bonferroni adjustment over the paired-test family, reported next to the
+  raw p-values.
 - `docs/RELATED_WORK.md` — what each component was borrowed from, what was
   adapted, and what was deliberately left out.
 - `docs/REAL_DATA.md` — the scene contract, supported encodings, and the public
